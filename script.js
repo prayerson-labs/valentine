@@ -29,6 +29,7 @@ const copiedMessage = document.getElementById('copied-message');
 
 const heartsBg          = document.getElementById('hearts-bg');
 const confettiContainer = document.getElementById('confetti-container');
+const bgMusic           = document.getElementById('bg-music');
 
 /* ============================================
    Utility Functions
@@ -244,6 +245,7 @@ function dodgeNoButton() {
    ============================================ */
 function triggerCelebration() {
   btnYes.disabled = true;
+  startMusic();
 
   // Immediate effects
   app.classList.add('shake');
@@ -257,6 +259,37 @@ function triggerCelebration() {
     transitionTo('state-celebration');
   }, 600);
 }
+
+/* ============================================
+   Background Music
+   ============================================ */
+function startMusic() {
+  if (!bgMusic) return;
+
+  bgMusic.volume = 0;
+  bgMusic.play().catch(function () {});
+
+  var vol = 0;
+  var fade = setInterval(function () {
+    vol += 0.02;
+    if (vol >= 0.35) {
+      bgMusic.volume = 0.35;
+      clearInterval(fade);
+    } else {
+      bgMusic.volume = vol;
+    }
+  }, 120);
+}
+
+document.addEventListener('visibilitychange', function () {
+  if (!bgMusic) return;
+
+  if (document.hidden) {
+    bgMusic.pause();
+  } else {
+    bgMusic.play().catch(function () {});
+  }
+});
 
 /* ============================================
    Share / Clipboard
