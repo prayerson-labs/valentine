@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#fff7ed">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>for you</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ========== Background layers — always alive ========== -->
+  <div id="hearts-bg" aria-hidden="true"></div>
+  <div id="confetti-container" aria-hidden="true"></div>
+
+  <!-- ========== Main experience container ========== -->
+  <main id="app">
+
+    <!-- STATE 1 — Arrival -->
+    <section id="state-arrival" class="state active">
+      <div class="pulse-heart" aria-hidden="true">❤️</div>
+      <p class="arrival-text">just a second…</p>
+    </section>
+
+    <!-- STATE 2 — Suspense -->
+    <section id="state-suspense" class="state">
+      <div class="typewriter-container">
+        <p id="line1" class="type-line"></p>
+        <p id="line2" class="type-line"></p>
+        <p id="line3" class="type-line small"></p>
+      </div>
+      <button id="btn-continue" class="btn-continue">continue</button>
+    </section>
+
+    <!-- STATE 3 — The Question -->
+    <section id="state-question" class="state">
+      <!--
+        Begging GIF — Puss in Boots pleading eyes
+        Swap the src below if you want a different GIF.
+      -->
+      <img
+        id="begging-gif"
+        src="https://media.giphy.com/media/mCRJDo24UvJMA/giphy.gif"
+        alt="pleading eyes"
+        class="state-gif"
+        decoding="async"
+      >
+      <div class="gif-fallback begging-fallback" aria-hidden="true">🥺</div>
+
+      <h1 class="question-text">Will you be my Valentine for…</h1>
+
+      <div class="date-cycle">
+        <span id="date-text">feb 14</span>
+      </div>
+
+      <div id="buttons-container" class="buttons-row">
+        <button id="btn-yes" class="btn-yes">Yes</button>
+        <button id="btn-no" class="btn-no">No</button>
+      </div>
+
+      <p id="no-message" class="no-message"></p>
+    </section>
+
+    <!-- STATE 4 — Celebration -->
+    <section id="state-celebration" class="state">
+      <!--
+        Celebration GIF — happy / hug / zoomies
+        Swap the src below if you want a different GIF.
+      -->
+      <img
+        id="celebration-gif"
+        src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif"
+        alt="celebration"
+        class="state-gif"
+        decoding="async"
+        loading="lazy"
+      >
+      <div class="gif-fallback celebration-fallback" aria-hidden="true">🎉</div>
+
+      <h1 class="celebrate-heading">best decision of your life</h1>
+      <p class="celebrate-subtext">feb 14 officially booked</p>
+
+      <button id="btn-share" class="btn-share">share with me</button>
+      <p id="copied-message" class="copied-message"></p>
+    </section>
+
+  </main>
+
+  <footer class="signature">
+    <span>engineered by prayerson (under emotional pressure)</span>
+    <span class="dot">·</span>
+    <a href="https://x.com/iamprayerson" target="_blank" rel="noopener">x</a>
+    <span class="dot">·</span>
+    <a href="https://www.linkedin.com/in/prayersonchristian/" target="_blank" rel="noopener">linkedin</a>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
