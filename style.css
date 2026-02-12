@@ -592,7 +592,45 @@ button:focus-visible {
 
 @media (max-width: 480px) {
   .signature {
-    font-size: 11px;
-    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 8px;
+
+    width: 100%;
+    max-width: 92vw;
+    padding: 0 14px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    font-size: 12px;
+    line-height: 1.25;
+    opacity: 0.75;
+  }
+
+  .signature .sig-line {
+    display: inline;
+  }
+
+  .signature .sig-title {
+    margin-right: 6px;
+  }
+
+  .signature .sig-name {
+    margin: 0 6px;
+  }
+
+  .signature .sig-links {
+    margin-left: 6px;
+  }
+
+  .signature a {
+    padding: 2px 4px;
   }
 }
