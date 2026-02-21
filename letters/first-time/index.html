@@ -173,41 +173,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: auto;
-      cursor: pointer;
+      pointer-events: none;
     }
 
     .star-dot {
       border-radius: 50%;
       background: var(--star);
       opacity: 0.02;
-    }
-
-    /* ==========================================
-       Thought Bubbles
-       ========================================== */
-    .thought {
-      position: fixed;
-      z-index: 5;
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-weight: 300;
-      font-style: italic;
-      font-size: 0.93rem;
-      color: var(--note-text);
-      background: var(--thought-bg);
-      padding: 10px 16px;
-      border-radius: 6px;
-      max-width: calc(100vw - 24px);
-      white-space: normal;
-      text-align: center;
-      box-sizing: border-box;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.6s ease;
-    }
-
-    .thought.visible {
-      opacity: 1;
     }
 
     /* ==========================================
@@ -297,7 +269,8 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-left: 14px;
+      margin-left: 0;
+      margin-top: 14px;
       padding: 4px 10px 4px 8px;
       border: 1px solid rgba(200, 190, 210, 0.18);
       border-radius: 20px;
@@ -311,9 +284,6 @@
       letter-spacing: 0.1em;
       cursor: pointer;
       opacity: 0;
-      vertical-align: middle;
-      position: relative;
-      top: -1px;
       transition: opacity 1.5s ease, color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
       user-select: none;
       white-space: nowrap;
@@ -498,7 +468,7 @@
       <h1 class="title-main">the first time <span class="amp">&amp;</span> how it started</h1>
     </div>
     <div id="letter-content"><span id="cursor"></span></div>
-    <p class="letter-footer">no response needed.</p>
+    <p class="letter-footer">just wanted you to know. no pressure to respond.</p>
   </div>
 
   <!-- Audio: created dynamically in JS on user gesture -->
@@ -588,15 +558,6 @@
     /* ==========================================
        Stars — Living Sky
        ========================================== */
-    var thoughts = [
-      'God put you right there and i almost didn\u2019t notice.',
-      'the third day changed everything',
-      'i wasn\u2019t supposed to move seats. funny how that worked out.',
-      'i hope my work gets better. it hasn\u2019t yet.',
-      'you started talking first. i was too scared.',
-      'some things you don\u2019t plan. they just happen on a monday.'
-    ];
-
     function spawnStars() {
       for (var i = 0; i < 18; i++) {
         (function (idx) {
@@ -623,10 +584,6 @@
 
       skyEl.appendChild(wrap);
       breathe(dot);
-
-      wrap.addEventListener('click', function () {
-        showThought(wrap);
-      });
     }
 
     function breathe(dot) {
@@ -649,35 +606,6 @@
           }, fadeOut);
         }, hold);
       }, fadeIn);
-    }
-
-    function showThought(starWrap) {
-      if (document.querySelector('.thought.visible')) return;
-
-      var bubble = document.createElement('div');
-      bubble.className = 'thought';
-      bubble.textContent = thoughts[Math.floor(Math.random() * thoughts.length)];
-
-      var rect = starWrap.getBoundingClientRect();
-      var bubbleWidth = 260;
-      var starX = rect.left + rect.width / 2;
-      var safeLeft = Math.min(
-        Math.max(starX - bubbleWidth / 2, 12),
-        window.innerWidth - bubbleWidth - 12
-      );
-      bubble.style.left = safeLeft + 'px';
-      bubble.style.top = (rect.bottom + 8) + 'px';
-
-      document.body.appendChild(bubble);
-
-      requestAnimationFrame(function () {
-        bubble.classList.add('visible');
-      });
-
-      setTimeout(function () {
-        bubble.classList.remove('visible');
-        setTimeout(function () { bubble.remove(); }, 600);
-      }, 2400);
     }
 
     /* ==========================================
@@ -715,6 +643,8 @@
         await typeString(seg.content);
 
         if (seg.type === 'italic') {
+          contentEl.insertBefore(document.createElement('br'), cursorEl);
+
           var btn = document.createElement('span');
           btn.id = 'music-btn';
           btn.innerHTML = ICON_PLAY + '<span>music</span>';
