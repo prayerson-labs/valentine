@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f0e11">
+  <title>a letter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================
+       CSS Variables
+       ========================================== */
+    :root {
+      --ink: #e8e2d9;
+      --ink-muted: #6e6a72;
+      --star: #8a7fa0;
+      --cursor: #c8c0b8;
+      --note-bg: rgba(22, 20, 28, 0.92);
+      --thought-bg: rgba(22, 20, 28, 0.85);
+      --note-text: #d4cec8;
+      --continue-text: #7a7280;
+    }
+
+    /* ==========================================
+       Reset & Base
+       ========================================== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #0f0e11;
+      color: var(--ink);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 40s linear;
+    }
+
+    /* ==========================================
+       Background Gradient Layer
+       ========================================== */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(99, 78, 143, 0.18), transparent 70%),
+        radial-gradient(ellipse at 0% 100%, rgba(180, 120, 80, 0.10), transparent 60%),
+        radial-gradient(ellipse at 100% 100%, rgba(60, 100, 140, 0.09), transparent 60%);
+      transition: background 40s linear;
+    }
+
+    /* ==========================================
+       Film Grain Layer
+       ========================================== */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.038;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 180px 180px;
+    }
+
+    /* ==========================================
+       Evening Mode
+       ========================================== */
+    body.evening {
+      background: #0a090d;
+    }
+
+    body.evening::before {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(99, 78, 143, 0.28), transparent 70%),
+        radial-gradient(ellipse at 0% 100%, rgba(180, 120, 80, 0.10), transparent 60%),
+        radial-gradient(ellipse at 100% 100%, rgba(60, 100, 140, 0.09), transparent 60%);
+    }
+
+    /* ==========================================
+       Splash Screen
+       ========================================== */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0f0e11;
+      transition: opacity 0.9s ease;
+    }
+
+    #splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .splash-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.63rem;
+      letter-spacing: 0.15em;
+      color: var(--ink-muted);
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards;
+      animation-delay: 0.5s;
+      text-align: center;
+      padding: 0 24px;
+    }
+
+    .splash-btn {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--continue-text);
+      background: none;
+      border: none;
+      border-bottom: 1px dotted var(--continue-text);
+      cursor: pointer;
+      padding: 4px 0;
+      margin-top: 28px;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards;
+      animation-delay: 1.6s;
+    }
+
+    .splash-btn:focus-visible {
+      outline: 1px dotted var(--continue-text);
+      outline-offset: 4px;
+    }
+
+    /* ==========================================
+       Dust Canvas
+       ========================================== */
+    #dust {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      display: block;
+    }
+
+    /* ==========================================
+       Stars — Sky
+       ========================================== */
+    #sky {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .star-wrap {
+      position: fixed;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .star-dot {
+      border-radius: 50%;
+      background: var(--star);
+      opacity: 0.02;
+    }
+
+    /* ==========================================
+       Thought Bubbles
+       ========================================== */
+    .thought {
+      position: fixed;
+      z-index: 5;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: 0.93rem;
+      color: var(--note-text);
+      background: var(--thought-bg);
+      padding: 10px 16px;
+      border-radius: 6px;
+      max-width: calc(100vw - 24px);
+      white-space: normal;
+      text-align: center;
+      box-sizing: border-box;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .thought.visible {
+      opacity: 1;
+    }
+
+    /* ==========================================
+       Scroll Wrap — Letter Container
+       ========================================== */
+    .scroll-wrap {
+      position: relative;
+      z-index: 4;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 88px 36px 150px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.9s ease;
+    }
+
+    .scroll-wrap.visible {
+      opacity: 1;
+    }
+
+    /* ==========================================
+       Title Block
+       ========================================== */
+    .title-block {
+      margin-bottom: 72px;
+      opacity: 0;
+    }
+
+    .title-block.visible {
+      animation: titleReveal 1.2s ease forwards;
+    }
+
+    .title-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--ink-muted);
+      margin-bottom: 16px;
+    }
+
+    .title-main {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      line-height: 1.15;
+      color: var(--ink);
+    }
+
+    .title-main .amp {
+      font-style: italic;
+      color: #9a8fb8;
+    }
+
+    /* ==========================================
+       Letter Content
+       ========================================== */
+    #letter-content {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      font-size: clamp(1.1rem, 2.6vw, 1.42rem);
+      line-height: 2.2;
+      color: var(--ink);
+      text-align: center;
+    }
+
+    #letter-content em {
+      font-style: italic;
+      color: #b8a898;
+    }
+
+    #letter-content a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px dotted var(--ink-muted);
+    }
+
+    #letter-content a:visited {
+      color: inherit;
+    }
+
+    /* ==========================================
+       Music Play Button
+       ========================================== */
+    #music-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 14px;
+      padding: 4px 10px 4px 8px;
+      border: 1px solid rgba(200, 190, 210, 0.18);
+      border-radius: 20px;
+      background: rgba(22, 20, 28, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      color: #c8b8d8;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      opacity: 0;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+      transition: opacity 1.5s ease, color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    #music-btn.visible {
+      opacity: 1;
+    }
+
+    #music-btn:hover {
+      background: rgba(138, 127, 160, 0.18);
+      border-color: rgba(200, 190, 210, 0.35);
+      color: #e8d8f0;
+    }
+
+    /* ==========================================
+       Typewriter Cursor
+       ========================================== */
+    #cursor {
+      display: inline-block;
+      width: 1px;
+      height: 1.1em;
+      background: var(--cursor);
+      vertical-align: text-bottom;
+      margin-left: 1px;
+      animation: blink 1.1s step-end infinite;
+      transition: opacity 1.2s ease;
+    }
+
+    #cursor.done {
+      opacity: 0;
+      animation: none;
+    }
+
+    /* ==========================================
+       Margin Annotations
+       ========================================== */
+    .annotated {
+      border-bottom: 1px dotted var(--ink-muted);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .note {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--note-text);
+      background: var(--note-bg);
+      padding: 8px 14px;
+      border-radius: 5px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      margin-bottom: 8px;
+    }
+
+    .note.visible {
+      opacity: 1;
+    }
+
+    /* ==========================================
+       Footer
+       ========================================== */
+    .letter-footer {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 0.62rem;
+      letter-spacing: 0.13em;
+      color: #8a7d6a;
+      margin-top: 80px;
+      opacity: 0;
+      transition: opacity 2s ease;
+      position: relative;
+      z-index: 6;
+    }
+
+    .letter-footer.visible {
+      opacity: 0.55;
+    }
+
+    /* ==========================================
+       Keyframes
+       ========================================== */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes titleReveal {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ==========================================
+       Responsive — 480px
+       ========================================== */
+    @media (max-width: 480px) {
+      .scroll-wrap {
+        padding: 56px 22px 120px;
+      }
+
+      #letter-content {
+        line-height: 2.05;
+      }
+
+      .title-main {
+        font-size: clamp(1.7rem, 8vw, 2.4rem);
+      }
+
+      .title-block {
+        margin-bottom: 52px;
+      }
+
+      .thought {
+        white-space: normal;
+        max-width: calc(100vw - 40px);
+        text-align: center;
+      }
+
+      .note {
+        white-space: normal;
+        max-width: 200px;
+      }
+    }
+
+    /* ==========================================
+       Responsive — 360px
+       ========================================== */
+    @media (max-width: 360px) {
+      .scroll-wrap {
+        padding: 48px 18px 100px;
+      }
+
+      .title-main {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splash">
+    <p class="splash-eyebrow">a small collection of things i didn't want to forget</p>
+    <button id="splash-btn" class="splash-btn">continue</button>
+  </div>
+
+  <!-- Dust Particle Canvas -->
+  <canvas id="dust"></canvas>
+
+  <!-- Star Sky -->
+  <div id="sky"></div>
+
+  <!-- Letter -->
+  <div class="scroll-wrap">
+    <div class="title-block">
+      <p class="title-eyebrow">a letter</p>
+      <h1 class="title-main">the first time <span class="amp">&amp;</span> how it started</h1>
+    </div>
+    <div id="letter-content"><span id="cursor"></span></div>
+    <p class="letter-footer">no response needed.</p>
+  </div>
+
+  <!-- Audio: created dynamically in JS on user gesture -->
+
+  <script>
+    /* ==========================================
+       DOM References
+       ========================================== */
+    var splash     = document.getElementById('splash');
+    var splashBtn  = document.getElementById('splash-btn');
+    var scrollWrap = document.querySelector('.scroll-wrap');
+    var titleBlock = document.querySelector('.title-block');
+    var contentEl  = document.getElementById('letter-content');
+    var cursorEl   = document.getElementById('cursor');
+    var footerEl   = document.querySelector('.letter-footer');
+    var skyEl      = document.getElementById('sky');
+    var dustCanvas = document.getElementById('dust');
+
+    var ICON_PLAY = '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 1.5L9.5 5.5L2 9.5V1.5Z" fill="currentColor"/></svg>';
+    var ICON_PAUSE = '<svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="1.5" width="2.8" height="8" rx="1" fill="currentColor"/><rect x="6.2" y="1.5" width="2.8" height="8" rx="1" fill="currentColor"/></svg>';
+
+    /* ==========================================
+       Utility
+       ========================================== */
+    function wait(ms) {
+      return new Promise(function (r) { setTimeout(r, ms); });
+    }
+
+    /* ==========================================
+       Audio
+       ========================================== */
+    var music = null;
+    var musicStarted = false;
+
+    function initMusic() {
+      music = new Audio('audio/letter-1-music.mp3');
+      music.loop = true;
+      music.volume = 0;
+    }
+
+    function playMusic() {
+      if (musicStarted) return;
+      musicStarted = true;
+      music.play().catch(function (err) { console.log('Audio:', err); });
+      var vol = 0;
+      var fadeIn = setInterval(function () {
+        vol = Math.min(vol + 0.01, 0.2);
+        music.volume = vol;
+        if (vol >= 0.2) clearInterval(fadeIn);
+      }, 150);
+    }
+
+    function stopMusic() {
+      if (!music || !musicStarted) return;
+      var fadeOut = setInterval(function () {
+        music.volume = Math.max(music.volume - 0.01, 0);
+        if (music.volume <= 0) {
+          clearInterval(fadeOut);
+          music.pause();
+          musicStarted = false;
+        }
+      }, 150);
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      if (!music || !musicStarted) return;
+
+      if (document.hidden) {
+        var fadeOut = setInterval(function () {
+          music.volume = Math.max(music.volume - 0.02, 0);
+          if (music.volume <= 0) {
+            clearInterval(fadeOut);
+            music.pause();
+          }
+        }, 80);
+      } else {
+        music.play().catch(function () {});
+        var vol = 0;
+        var fadeIn = setInterval(function () {
+          vol = Math.min(vol + 0.01, 0.2);
+          music.volume = vol;
+          if (vol >= 0.2) clearInterval(fadeIn);
+        }, 150);
+      }
+    });
+
+    /* ==========================================
+       Stars — Living Sky
+       ========================================== */
+    var thoughts = [
+      'God put you right there and i almost didn\u2019t notice.',
+      'the third day changed everything',
+      'i wasn\u2019t supposed to move seats. funny how that worked out.',
+      'i hope my work gets better. it hasn\u2019t yet.',
+      'you started talking first. i was too scared.',
+      'some things you don\u2019t plan. they just happen on a monday.'
+    ];
+
+    function spawnStars() {
+      for (var i = 0; i < 18; i++) {
+        (function (idx) {
+          setTimeout(function () {
+            createStar();
+          }, idx * 500 + Math.random() * 300);
+        })(i);
+      }
+    }
+
+    function createStar() {
+      var wrap = document.createElement('div');
+      wrap.className = 'star-wrap';
+
+      var size = 1.8 + Math.random() * 2.2;
+      var dot = document.createElement('div');
+      dot.className = 'star-dot';
+      dot.style.width = size + 'px';
+      dot.style.height = size + 'px';
+      wrap.appendChild(dot);
+
+      wrap.style.left = Math.random() * (window.innerWidth - 18) + 'px';
+      wrap.style.top = Math.random() * (window.innerHeight * 0.62) + 'px';
+
+      skyEl.appendChild(wrap);
+      breathe(dot);
+
+      wrap.addEventListener('click', function () {
+        showThought(wrap);
+      });
+    }
+
+    function breathe(dot) {
+      var peak     = 0.30 + Math.random() * 0.40;
+      var fadeIn   = 1200 + Math.random() * 2000;
+      var hold     = 800  + Math.random() * 2700;
+      var fadeOut  = 1000 + Math.random() * 2000;
+      var pause    = 600  + Math.random() * 3000;
+
+      dot.style.transition = 'opacity ' + fadeIn + 'ms ease';
+      dot.style.opacity = peak;
+
+      setTimeout(function () {
+        setTimeout(function () {
+          dot.style.transition = 'opacity ' + fadeOut + 'ms ease';
+          dot.style.opacity = 0.02;
+
+          setTimeout(function () {
+            setTimeout(function () { breathe(dot); }, pause);
+          }, fadeOut);
+        }, hold);
+      }, fadeIn);
+    }
+
+    function showThought(starWrap) {
+      if (document.querySelector('.thought.visible')) return;
+
+      var bubble = document.createElement('div');
+      bubble.className = 'thought';
+      bubble.textContent = thoughts[Math.floor(Math.random() * thoughts.length)];
+
+      var rect = starWrap.getBoundingClientRect();
+      var bubbleWidth = 260;
+      var starX = rect.left + rect.width / 2;
+      var safeLeft = Math.min(
+        Math.max(starX - bubbleWidth / 2, 12),
+        window.innerWidth - bubbleWidth - 12
+      );
+      bubble.style.left = safeLeft + 'px';
+      bubble.style.top = (rect.bottom + 8) + 'px';
+
+      document.body.appendChild(bubble);
+
+      requestAnimationFrame(function () {
+        bubble.classList.add('visible');
+      });
+
+      setTimeout(function () {
+        bubble.classList.remove('visible');
+        setTimeout(function () { bubble.remove(); }, 600);
+      }, 2400);
+    }
+
+    /* ==========================================
+       Typewriter Engine
+       ========================================== */
+    var segments = [
+      { type: 'text', content: 'i first saw you sitting in the conference room on your orientation day.\n\nyou have eyes that catch attention.\n\nthe way they say, ' },
+      { type: 'italic', content: 'aankhon mein teri, ajab si ajab si adayein hain.' },
+      { type: 'text', content: '\n\nthe second time was a ' },
+      { type: 'link', content: 'reel', url: 'https://www.instagram.com/reel/DLSMKlVIFEf/' },
+      { type: 'text', content: '.\n\ni never imagined i would get a chance to really know you.\nbut God had other plans.\n\nhe gave me a seat beside you.\nthey say ram knew, the moment he saw sita in the garden.\n\ni won\u2019t pretend i was happy about it at first.\nmoving away from my team felt like loss.\nbut the day i noticed you were there,\ni knew God was upto something.\n\nthe first two days were hard.\nthe introvert in me didn\u2019t know how to begin talking to you.\n\nthen you started it. on the third day.\n\nand thank God you did!\n\nsince then, although my work suffered a little,\nmy heart was happy dancing.\n\nso yeah.\nthat\u2019s how it started.' }
+    ];
+
+    var currentTarget = null;
+
+    async function typeSegments() {
+      for (var s = 0; s < segments.length; s++) {
+        var seg = segments[s];
+
+        if (seg.type === 'italic') {
+          var em = document.createElement('em');
+          contentEl.insertBefore(em, cursorEl);
+          currentTarget = em;
+        } else if (seg.type === 'link') {
+          var a = document.createElement('a');
+          a.href = seg.url;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          contentEl.insertBefore(a, cursorEl);
+          currentTarget = a;
+        } else {
+          currentTarget = null;
+        }
+
+        await typeString(seg.content);
+
+        if (seg.type === 'italic') {
+          var btn = document.createElement('span');
+          btn.id = 'music-btn';
+          btn.innerHTML = ICON_PLAY + '<span>music</span>';
+          btn.title = 'play music';
+          contentEl.insertBefore(btn, cursorEl);
+
+          btn.addEventListener('click', function () {
+            if (!musicStarted) {
+              playMusic();
+              btn.innerHTML = ICON_PAUSE + '<span>pause</span>';
+            } else {
+              musicStarted = false;
+              btn.innerHTML = ICON_PLAY + '<span>music</span>';
+              var fadeOut = setInterval(function () {
+                music.volume = Math.max(music.volume - 0.01, 0);
+                if (music.volume <= 0) {
+                  clearInterval(fadeOut);
+                  music.pause();
+                }
+              }, 150);
+            }
+          });
+
+          setTimeout(function () { btn.classList.add('visible'); }, 300);
+        }
+      }
+
+      onTypingComplete();
+    }
+
+    async function typeString(text) {
+      var i = 0;
+
+      while (i < text.length) {
+        var ch = text[i];
+
+        if (ch === '\n' && i + 1 < text.length && text[i + 1] === '\n') {
+          contentEl.insertBefore(document.createElement('br'), cursorEl);
+          contentEl.insertBefore(document.createElement('br'), cursorEl);
+          i += 2;
+          await wait(850);
+          autoScroll();
+          continue;
+        }
+
+        if (ch === '\n') {
+          contentEl.insertBefore(document.createElement('br'), cursorEl);
+          i++;
+          await wait(40);
+          autoScroll();
+          continue;
+        }
+
+        var node = document.createTextNode(ch);
+        if (currentTarget) {
+          currentTarget.appendChild(node);
+        } else {
+          contentEl.insertBefore(node, cursorEl);
+        }
+
+        i++;
+
+        var delay = 40;
+        if (ch === '.') delay = 480;
+        else if (ch === ',') delay = 200;
+
+        await wait(delay);
+        autoScroll();
+      }
+    }
+
+    function autoScroll() {
+      var rect = cursorEl.getBoundingClientRect();
+      if (rect.bottom > window.innerHeight - 130) {
+        window.scrollBy({ top: 80, behavior: 'smooth' });
+      }
+    }
+
+    /* ==========================================
+       Margin Annotations
+       ========================================== */
+    var annotations = [
+      { phrase: 'catch attention',          note: 'you didn\u2019t try. that was the point.' },
+      { phrase: 'something in me settled',  note: 'that\u2019s when everything changed' },
+      { phrase: 'heart was happy dancing',  note: 'the best kind of distraction' }
+    ];
+
+    function activateAnnotations() {
+      contentEl.normalize();
+
+      annotations.forEach(function (ann) {
+        var walker = document.createTreeWalker(contentEl, NodeFilter.SHOW_TEXT, null);
+        while (walker.nextNode()) {
+          var textNode = walker.currentNode;
+          var idx = textNode.textContent.indexOf(ann.phrase);
+          if (idx === -1) continue;
+
+          var before = textNode.textContent.substring(0, idx);
+          var after  = textNode.textContent.substring(idx + ann.phrase.length);
+
+          var span = document.createElement('span');
+          span.className = 'annotated';
+          span.textContent = ann.phrase;
+          span.setAttribute('data-note', ann.note);
+
+          var parent = textNode.parentNode;
+          if (before) parent.insertBefore(document.createTextNode(before), textNode);
+          parent.insertBefore(span, textNode);
+          if (after) parent.insertBefore(document.createTextNode(after), textNode);
+          parent.removeChild(textNode);
+
+          span.addEventListener('click', function () {
+            showAnnotation(this);
+          });
+
+          break;
+        }
+      });
+    }
+
+    function showAnnotation(span) {
+      if (document.querySelector('.note.visible')) return;
+
+      var note = document.createElement('div');
+      note.className = 'note';
+      note.textContent = span.getAttribute('data-note');
+      span.appendChild(note);
+
+      requestAnimationFrame(function () {
+        note.classList.add('visible');
+      });
+
+      setTimeout(function () {
+        note.classList.remove('visible');
+        setTimeout(function () { note.remove(); }, 400);
+      }, 2500);
+    }
+
+    /* ==========================================
+       Ambient Dust Particles
+       ========================================== */
+    function startDust() {
+      var canvas = dustCanvas;
+      var ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      var count = 38 + Math.floor(Math.random() * 3);
+      var particles = [];
+
+      for (var i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: 0.3 + Math.random() * 1.2,
+          speed: 0.06 + Math.random() * 0.20,
+          opacity: 0.015 + Math.random() * 0.055,
+          drift: (Math.random() - 0.5) * 0.28
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          p.y -= p.speed;
+          p.x += p.drift;
+
+          if (p.y < -10) {
+            p.y = canvas.height + 10;
+            p.x = Math.random() * canvas.width;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(200, 190, 210, ' + p.opacity + ')';
+          ctx.fill();
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    }
+
+    /* ==========================================
+       Post-Typing — Evening, Dust, Annotations
+       ========================================== */
+    function onTypingComplete() {
+      cursorEl.classList.add('done');
+      document.body.classList.add('evening');
+      startDust();
+      activateAnnotations();
+
+      setTimeout(function () {
+        footerEl.classList.add('visible');
+      }, 500);
+    }
+
+    /* ==========================================
+       Splash — Continue Handler
+       ========================================== */
+    splashBtn.addEventListener('click', function () {
+      splash.classList.add('hidden');
+      initMusic();
+
+      setTimeout(function () {
+        scrollWrap.classList.add('visible');
+        titleBlock.classList.add('visible');
+        spawnStars();
+
+        setTimeout(function () {
+          typeSegments();
+        }, 1400);
+      }, 300);
+
+      setTimeout(function () {
+        splash.style.display = 'none';
+      }, 1200);
+    });
+  </script>
+</body>
+</html>
