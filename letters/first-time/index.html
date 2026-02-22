@@ -349,27 +349,26 @@
     }
 
     .note {
-      position: absolute;
-      bottom: 100%;
+      position: fixed;
+      bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      font-weight: 300;
+      font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 0.8rem;
+      font-size: 0.95rem;
       color: var(--note-text);
       background: var(--note-bg);
-      padding: 8px 14px;
-      border-radius: 5px;
-      white-space: nowrap;
+      padding: 10px 20px;
+      border-radius: 8px;
+      white-space: normal;
+      text-align: center;
+      max-width: calc(100vw - 48px);
+      width: max-content;
       pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      margin-bottom: 8px;
-    }
-
-    .note.visible {
-      opacity: 1;
+      z-index: 15;
+      border: 1px solid rgba(138, 127, 160, 0.12);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+      animation: noteFade 2.5s ease forwards;
     }
 
     /* ==========================================
@@ -422,6 +421,13 @@
       50% { opacity: 0; }
     }
 
+    @keyframes noteFade {
+      0%   { opacity: 0; transform: translateY(4px); }
+      15%  { opacity: 1; transform: translateY(0); }
+      80%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-4px); }
+    }
+
     /* ==========================================
        Responsive — 480px
        ========================================== */
@@ -448,10 +454,6 @@
         text-align: center;
       }
 
-      .note {
-        white-space: normal;
-        max-width: 200px;
-      }
     }
 
     /* ==========================================
@@ -778,7 +780,13 @@
           parent.removeChild(textNode);
 
           span.addEventListener('click', function () {
-            showAnnotation(this);
+            document.querySelectorAll('.note').forEach(function (n) { n.remove(); });
+
+            var note = document.createElement('div');
+            note.className = 'note';
+            note.textContent = this.dataset.note;
+            document.body.appendChild(note);
+            note.addEventListener('animationend', function () { note.remove(); });
           });
 
           break;
@@ -786,23 +794,6 @@
       });
     }
 
-    function showAnnotation(span) {
-      if (document.querySelector('.note.visible')) return;
-
-      var note = document.createElement('div');
-      note.className = 'note';
-      note.textContent = span.getAttribute('data-note');
-      span.appendChild(note);
-
-      requestAnimationFrame(function () {
-        note.classList.add('visible');
-      });
-
-      setTimeout(function () {
-        note.classList.remove('visible');
-        setTimeout(function () { note.remove(); }, 400);
-      }, 2500);
-    }
 
     /* ==========================================
        Ambient Dust Particles
