@@ -349,25 +349,26 @@
     }
 
     .note {
-      position: fixed;
-      bottom: 80px;
+      position: absolute;
+      bottom: 100%;
       left: 50%;
       transform: translateX(-50%);
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: 0.95rem;
+      font-size: 0.8rem;
       color: var(--note-text);
       background: var(--note-bg);
-      padding: 10px 20px;
-      border-radius: 8px;
+      padding: 6px 12px;
+      border-radius: 5px;
       white-space: normal;
-      text-align: center;
-      max-width: calc(100vw - 48px);
       width: max-content;
+      max-width: min(260px, calc(100vw - 32px));
+      text-align: center;
       pointer-events: none;
-      z-index: 15;
-      border: 1px solid rgba(138, 127, 160, 0.12);
-      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+      z-index: 10;
+      margin-bottom: 8px;
+      border: 1px solid rgba(138, 127, 160, 0.1);
+      box-shadow: 0 1px 8px rgba(0,0,0,0.4);
       animation: noteFade 2.5s ease forwards;
     }
 
@@ -780,12 +781,25 @@
           parent.removeChild(textNode);
 
           span.addEventListener('click', function () {
-            document.querySelectorAll('.note').forEach(function (n) { n.remove(); });
-
-            var note = document.createElement('div');
+            if (this.querySelector('.note')) return;
+            var note = document.createElement('span');
             note.className = 'note';
             note.textContent = this.dataset.note;
-            document.body.appendChild(note);
+            this.appendChild(note);
+
+            requestAnimationFrame(function () {
+              var rect = note.getBoundingClientRect();
+              if (rect.right > window.innerWidth - 12) {
+                note.style.left = 'auto';
+                note.style.right = '0';
+                note.style.transform = 'none';
+              }
+              if (rect.left < 12) {
+                note.style.left = '0';
+                note.style.transform = 'none';
+              }
+            });
+
             note.addEventListener('animationend', function () { note.remove(); });
           });
 
